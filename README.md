@@ -1,6 +1,7 @@
-# Ahmed Yousef Ramadan | Certified Science & Chemistry Educator
+# Ahmed Yousef Ramadan | Certified Science & Chemistry Educator | EdTech Specialist
 
-> **STEM & Inquiry-Based Science Teacher**  
+> **Science & Chemistry Teacher** at **Mounir Educational Academy**  
+> **LMS & Educational Platforms Architect**  
 > **Credentials:** B.Sc. in Biophysics & Chemistry (Faculty of Science) | Postgraduate Diploma in Education (PGDE - تأهيل تربوي) (Faculty of Education)  
 > **Location:** Alexandria, Egypt  
 > **Contact:** +20 155 390 0394 | ahmedaboshady128@gmail.com  
@@ -16,13 +17,13 @@ This repository contains my curriculum vitae, instructional frameworks, sample 5
 ## 📂 Repository Contents
 * **`Ahmed_Yousef_Science_Teacher_CV.pdf`**: Print-ready, ATS-optimized, 2-page international school teacher resume.
 * **`Ahmed_Yousef_Science_Teacher_CV.docx`**: Fully editable Microsoft Word version.
-* **`index.html`**: Complete, responsive, modern digital teacher portfolio website (compatible with GitHub Pages).
+* **`index.html`**: Complete, responsive digital teacher portfolio website (compatible with GitHub Pages).
 
 ---
 
 ## 🌐 Live Teacher Portfolio (GitHub Pages)
-Once GitHub Pages is activated, this site is accessible at:
-`https://ahmed128aboshady.github.io/Ahmed-Abo-Shady-teacher-/`
+Once GitHub Pages is activated, this site is accessible at:  
+👉 **`https://ahmed128aboshady.github.io/Ahmed-Abo-Shady-teacher-/`**
 
 ### How to Enable GitHub Pages:
 1. Go to this repository on GitHub: `https://github.com/Ahmed128aboshady/Ahmed-Abo-Shady-teacher-`
@@ -33,8 +34,8 @@ Once GitHub Pages is activated, this site is accessible at:
 
 ---
 
-## 🔬 Core Competencies & Subject Expertise
-* **Cambridge IGCSE & O-Level**: Chemistry (0620), Coordinated Sciences (0654), Combined Science.
-* **American High School Diploma**: NGSS Chemistry, Physical Sciences, Middle School General Science.
-* **Pedagogical Strategies**: 5E Instructional Model, Inquiry-Based Learning (IBL), Differentiated Instruction, Formative Assessments (Exit tickets, Diagnostic checks).
-* **EdTech Integration**: PhET Interactive Simulations, Virtual Labs, Google Classroom, Microsoft Teams for Education, Quizizz, Kahoot.
+## 🔬 Core Competencies & Experience
+* **Teaching Experience**: Science & Chemistry Teacher at **Mounir Educational Academy** (Middle School Science & High School Chemistry).
+* **EdTech & Platforms**: Designed and deployed custom Educational Platforms & LMS solutions, automated grading, and student progress dashboards.
+* **International Curricula**: Cambridge IGCSE Chemistry (0620), Coordinated Sciences, American NGSS.
+* **Pedagogical Strategies**: 5E Instructional Model, Inquiry-Based Learning (IBL), Differentiated Instruction, Formative Assessments.
