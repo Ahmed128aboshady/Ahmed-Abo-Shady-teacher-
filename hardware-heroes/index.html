@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hardware Heroes | Smartboard Superhero Lab</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+            }
+          },
+          fontFamily: {
+            fredoka: ['Fredoka', 'sans-serif'],
+            cairo: ['Cairo', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Fonts: Fredoka & Cairo -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&family=Fredoka:wght@500;600;700;800&family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Fredoka', 'Inter', sans-serif;
+      background: #030712;
+      color: #f8fafc;
+      overflow-x: hidden;
+      overflow-y: auto;
+      user-select: none;
+      min-height: 100vh;
+      width: 100%;
+    }
+    @media (min-width: 1024px) {
+      body {
+        overflow: hidden;
+        height: 100vh;
+        width: 100vw;
+      }
+    }
+    
+    /* Hide scrollbar for clean touch swipe docks */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    /* Cyber Grid Smartboard Background */
+    .cyber-bg {
+      background-color: #030712;
+      background-image: 
+        radial-gradient(circle at 50% 45%, rgba(56, 189, 248, 0.15) 0%, transparent 70%),
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 50px 50px, 50px 50px;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       TAILORED SUPERHERO CUSTOM ANIMATIONS
+       ══════════════════════════════════════════════════════════════════ */
+    
+    /* 1. BRAINY (العقل بيفكر): Concentric Thinking Waves & Deep Thought Pulsing */
+    @keyframes brainThinkPulse {
+      0%, 100% { transform: scale(1) translateY(0); filter: drop-shadow(0 0 20px #00f2fe); }
+      50% { transform: scale(1.08) translateY(-8px); filter: drop-shadow(0 0 45px #38bdf8); }
+    }
+    @keyframes thinkingWave1 {
+      0% { r: 12px; opacity: 1; stroke-width: 3.5px; }
+      100% { r: 50px; opacity: 0; stroke-width: 0.5px; }
+    }
+    @keyframes thinkingWave2 {
+      0% { r: 12px; opacity: 1; stroke-width: 3.5px; }
+      50% { opacity: 0.8; }
+      100% { r: 70px; opacity: 0; stroke-width: 0.5px; }
+    }
+    @keyframes thoughtParticle {
+      0%, 100% { opacity: 0.2; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-10px); }
+    }
+    .anim-brainy {
+      animation: brainThinkPulse 2.8s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+    .think-wave-1 { animation: thinkingWave1 2.2s ease-out infinite; transform-origin: 100px 30px; }
+    .think-wave-2 { animation: thinkingWave2 2.2s ease-out infinite 0.7s; transform-origin: 100px 30px; }
+    .thought-p1 { animation: thoughtParticle 1.8s ease-in-out infinite; }
+    .thought-p2 { animation: thoughtParticle 2.2s ease-in-out infinite 0.5s; }
+
+    /* 2. FLASHY (فلاش الصورة تيجي سريعة): Supersonic Rush Entrance & Speed Dash */
+    @keyframes flashRushEntrance {
+      0% { transform: translateX(-160%) scaleX(2.8) skewX(-35deg); opacity: 0; filter: blur(16px); }
+      60% { transform: translateX(30px) scaleX(0.88) skewX(8deg); opacity: 1; filter: blur(0px); }
+      80% { transform: translateX(-12px) scaleX(1.06); }
+      100% { transform: translateX(0px) scaleX(1); opacity: 1; }
+    }
+    @keyframes flashSpeedHover {
+      0%, 100% { transform: translateY(0px) skewX(0deg); filter: drop-shadow(0 0 20px #10b981); }
+      25% { transform: translateY(-6px) skewX(-2deg); filter: drop-shadow(-10px 0 35px #34d399); }
+      75% { transform: translateY(4px) skewX(2deg); filter: drop-shadow(10px 0 35px #059669); }
+    }
+    @keyframes speedTrail {
+      0% { transform: translateX(-25px); opacity: 0; }
+      50% { opacity: 0.9; }
+      100% { transform: translateX(25px); opacity: 0; }
+    }
+    .anim-flashy {
+      animation: flashRushEntrance 0.38s cubic-bezier(0.1, 0.9, 0.2, 1) forwards, flashSpeedHover 1.4s ease-in-out infinite 0.4s;
+      transform-origin: center center;
+    }
+    .speed-trail-line { animation: speedTrail 0.7s linear infinite; }
+
+    /* 3. TANK (تانك يكبر): Heavy Growth & Massive Juggernaut Expansion */
+    @keyframes tankGrowMassive {
+      0% { transform: scale(0.65); opacity: 0; }
+      45% { transform: scale(1.38); filter: drop-shadow(0 0 60px #c084fc); }
+      75% { transform: scale(1.18); }
+      100% { transform: scale(1.28); opacity: 1; }
+    }
+    @keyframes tankHeavyStance {
+      0%, 100% { transform: scale(1.28) translateY(0); filter: drop-shadow(0 0 25px rgba(192, 132, 252, 0.45)); }
+      50% { transform: scale(1.35) translateY(-5px); filter: drop-shadow(0 0 55px rgba(192, 132, 252, 0.9)); }
+    }
+    .anim-tank {
+      animation: tankGrowMassive 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, tankHeavyStance 3s ease-in-out infinite 0.6s;
+      transform-origin: center center;
+    }
+
+    /* 4. PRISM (بريزم ماجيك يظهر بشكل سحري): Magical Sparkle Materialize & Shimmer */
+    @keyframes magicMaterialize {
+      0% { transform: scale(0.2) rotate(-160deg); opacity: 0; filter: hue-rotate(180deg) blur(14px); }
+      65% { transform: scale(1.2) rotate(12deg); opacity: 1; filter: hue-rotate(45deg) blur(0px); }
+      85% { transform: scale(0.95) rotate(-4deg); }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; filter: hue-rotate(0deg); }
+    }
+    @keyframes magicShimmer {
+      0% { filter: drop-shadow(0 0 20px #f59e0b) hue-rotate(0deg); }
+      50% { filter: drop-shadow(0 0 50px #ec4899) hue-rotate(75deg); }
+      100% { filter: drop-shadow(0 0 20px #f59e0b) hue-rotate(0deg); }
+    }
+    @keyframes magicFloatLeft {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(180deg) scale(1.25); }
+    }
+    @keyframes magicFloatRight {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(20px) rotate(-180deg) scale(1.25); }
+    }
+    .anim-prism {
+      animation: magicMaterialize 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, magicShimmer 3.5s ease-in-out infinite 0.65s;
+      transform-origin: center center;
+    }
+    .magic-crystal-1 { animation: magicFloatLeft 3s ease-in-out infinite; transform-origin: 35px 55px; }
+    .magic-crystal-2 { animation: magicFloatRight 3.2s ease-in-out infinite 0.5s; transform-origin: 165px 50px; }
+
+    /* 5. VOLT (فولت تكون حوليه كهربا): Crackling Lightning Bolts & High-Voltage Aura */
+    @keyframes voltLightningZap {
+      0%, 100% { opacity: 0.15; transform: scale(0.96); }
+      12% { opacity: 1; transform: scale(1.15); filter: drop-shadow(0 0 22px #fbbf24); }
+      24% { opacity: 0.2; }
+      42% { opacity: 0.95; transform: scale(1.08); filter: drop-shadow(0 0 30px #ef4444); }
+      58% { opacity: 0.1; }
+      78% { opacity: 1; transform: scale(1.14); filter: drop-shadow(0 0 35px #facc15); }
+    }
+    @keyframes voltCorePulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px #ef4444); }
+      50% { transform: scale(1.08); filter: drop-shadow(0 0 45px #fbbf24); }
+    }
+    .anim-volt {
+      animation: voltCorePulse 1.2s ease-in-out infinite;
+      transform-origin: center center;
+    }
+    .lightning-bolt { animation: voltLightningZap 1.1s ease-in-out infinite; transform-origin: center; }
+
+    /* 6. METRO (ميترو قائد الجيش): Military Commander Deployment & Radar Sweep */
+    @keyframes militaryDropIn {
+      0% { transform: translateY(-75px) scale(1.2); opacity: 0; }
+      65% { transform: translateY(6px) scale(0.95); opacity: 1; }
+      85% { transform: translateY(-3px) scale(1.02); }
+      100% { transform: translateY(0px) scale(1); opacity: 1; }
+    }
+    @keyframes commanderSalute {
+      0%, 100% { transform: translateY(0px); filter: drop-shadow(0 0 20px #3b82f6); }
+      50% { transform: translateY(-6px); filter: drop-shadow(0 0 40px #60a5fa); }
+    }
+    @keyframes radarSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .anim-metro {
+      animation: militaryDropIn 0.55s cubic-bezier(0.2, 0.9, 0.3, 1) forwards, commanderSalute 3s ease-in-out infinite 0.55s;
+      transform-origin: center bottom;
+    }
+    .radar-sweep-line {
+      animation: radarSpin 4s linear infinite;
+      transform-origin: 100px 180px;
+    }
+
+    /* Smartboard Callout Badge Styling */
+    .callout-card {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.88) 0%, rgba(30, 41, 59, 0.7) 100%);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .callout-card:hover {
+      transform: scale(1.06);
+      border-color: rgba(56, 189, 248, 0.6);
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.4);
+    }
+
+    /* Laser Pointer Line Glowing Effect */
+    .laser-line {
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.8), rgba(0, 242, 254, 0.3));
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.7);
+    }
+
+    /* Hero Speaking Dynamic Pulse */
+    @keyframes heroSpeakingVibe {
+      0%, 100% { transform: scale(1.03) translateY(-4px); filter: drop-shadow(0 0 45px rgba(56, 189, 248, 0.8)); }
+      30% { transform: scale(1.08) translateY(-8px) rotate(1.5deg); filter: drop-shadow(0 0 60px rgba(16, 185, 129, 0.9)); }
+      60% { transform: scale(1.04) translateY(-2px) rotate(-1.5deg); filter: drop-shadow(0 0 50px rgba(251, 191, 36, 0.9)); }
+      85% { transform: scale(1.09) translateY(-9px) rotate(0.8deg); filter: drop-shadow(0 0 65px rgba(239, 68, 68, 0.9)); }
+    }
+    .hero-speaking {
+      animation: heroSpeakingVibe 0.6s ease-in-out infinite alternate !important;
+    }
+  </style>
+</head>
+<body class="cyber-bg min-h-screen lg:h-screen w-full flex flex-col justify-between p-2 sm:p-4 lg:p-5 overflow-x-hidden overflow-y-auto lg:overflow-hidden" id="app-body">
+
+  <!-- ── TOP HEADER (CLEAN SMARTBOARD & MOBILE BANNER) ── -->
+  <header class="w-full max-w-7xl mx-auto flex items-center justify-between z-30 px-1 sm:px-2">
+    
+    <!-- Superhero Shield Logo & Brand -->
+    <div class="flex items-center gap-2 sm:gap-4">
+      <div class="relative flex items-center justify-center group cursor-pointer" onclick="playHeroVoice()" title="Hardware Heroes Superhero HQ">
+        <svg viewBox="0 0 100 100" class="w-10 h-10 sm:w-14 sm:h-14 filter drop-shadow-[0_0_16px_rgba(14,165,233,0.7)] transform group-hover:scale-110 transition-transform duration-300">
+          <defs>
+            <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#38bdf8"/>
+              <stop offset="40%" stop-color="#0284c7"/>
+              <stop offset="100%" stop-color="#0f172a"/>
+            </linearGradient>
+            <linearGradient id="goldBolt" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#fffbeb"/>
+              <stop offset="35%" stop-color="#fde047"/>
+              <stop offset="70%" stop-color="#f59e0b"/>
+              <stop offset="100%" stop-color="#ea580c"/>
+            </linearGradient>
+            <linearGradient id="goldRim" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#67e8f9"/>
+              <stop offset="50%" stop-color="#38bdf8"/>
+              <stop offset="100%" stop-color="#1d4ed8"/>
+            </linearGradient>
+          </defs>
+          <!-- Outer Shield -->
+          <polygon points="50,5 92,22 84,72 50,95 16,72 8,22" fill="url(#shieldGrad)" stroke="url(#goldRim)" stroke-width="3.5" stroke-linejoin="round"/>
+          <polygon points="50,13 84,27 77,66 50,86 23,66 16,27" fill="#030712" stroke="#0ea5e9" stroke-width="1.8" opacity="0.95"/>
+          <!-- Cyber Circuit Lines -->
+          <path d="M26,38 L36,38 L42,46" stroke="#00f2fe" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <circle cx="26" cy="38" r="2.5" fill="#38bdf8"/>
+          <path d="M74,38 L64,38 L58,46" stroke="#00f2fe" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <circle cx="74" cy="38" r="2.5" fill="#38bdf8"/>
+          <line x1="33" y1="28" x2="33" y2="72" stroke="#38bdf8" stroke-width="4.5" stroke-linecap="round" opacity="0.35"/>
+          <line x1="67" y1="28" x2="67" y2="72" stroke="#38bdf8" stroke-width="4.5" stroke-linecap="round" opacity="0.35"/>
+          <!-- Golden Lightning Bolt -->
+          <polygon points="56,10 34,46 50,46 41,86 70,41 53,41" fill="url(#goldBolt)" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round"/>
+          <circle cx="50" cy="46" r="3.5" fill="#ffffff"/>
+        </svg>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <div>
+          <h1 class="text-lg sm:text-2xl font-extrabold tracking-wide bg-gradient-to-r from-white via-cyan-200 to-blue-300 bg-clip-text text-transparent leading-tight" id="app-title">Hardware Heroes</h1>
+          <p class="text-[9px] sm:text-xs text-cyan-400 font-black uppercase tracking-widest" id="app-subtitle">Smartboard Interactive PC Lab</p>
+        </div>
+        <span class="text-[10px] sm:text-sm font-black px-2 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 uppercase tracking-wider shadow-md whitespace-nowrap" id="hero-badge-counter">Hero 1 of 6</span>
+      </div>
+    </div>
+
+    <!-- Smartboard & Mobile Controls (Fullscreen Toggle + Language Toggle) -->
+    <div class="flex items-center gap-1.5 sm:gap-3">
+      <!-- Fullscreen Button (Visible on tablets and boards) -->
+      <button onclick="toggleFullScreen()" class="hidden md:flex px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-slate-900/90 border border-slate-700 text-xs sm:text-sm font-bold text-slate-300 hover:text-white transition-all hover:border-cyan-400 items-center gap-1.5 shadow-sm" title="Toggle Fullscreen">
+        <i class="fa-solid fa-expand text-cyan-400"></i>
+        <span class="hidden sm:inline" id="fs-btn-text">Full Screen</span>
+      </button>
+
+      <!-- Language Toggle -->
+      <button id="lang-toggle-btn" onclick="toggleLang()" class="px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-slate-900/90 border border-slate-700 text-xs sm:text-sm font-bold text-slate-300 hover:text-white transition-all hover:border-cyan-400 flex items-center gap-1.5 shadow-sm">
+        <i class="fa-solid fa-globe text-cyan-400"></i>
+        <span id="lang-btn-text">عربي</span>
+      </button>
+    </div>
+
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       MAIN STAGE: FULL-SCREEN GIANT HERO + INFOGRAPHIC CALLOUT POINTERS
+       ══════════════════════════════════════════════════════════════════ -->
+  <main class="flex-1 w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 items-center justify-center relative my-1 z-20 px-1 sm:px-2">
+    
+    <!-- Previous Arrow (Touch Target) -->
+    <button onclick="prevHero()" class="absolute left-0.5 sm:left-2 z-40 w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl bg-slate-950/70 sm:bg-slate-900/90 hover:bg-cyan-600 border border-slate-700 hover:border-cyan-400 text-white flex items-center justify-center text-sm sm:text-2xl shadow-xl backdrop-blur-sm transition-all transform hover:scale-110 active:scale-95 group" title="Previous Hero">
+      <i class="fa-solid fa-chevron-left group-hover:-translate-x-1 transition-transform"></i>
+    </button>
+
+    <!-- ── LEFT COLUMN: 2 PUNCHY CALLOUT BADGES (WITH POINTER LINES) ── -->
+    <div class="hidden lg:flex lg:col-span-3 flex-col justify-center gap-6 pl-12 z-30" id="left-callouts">
+      
+      <!-- Callout #1 (Top-Left) -->
+      <div class="relative group cursor-pointer" onclick="highlightFeature(0)">
+        <div class="callout-card p-4 border-l-4 border-cyan-400 shadow-xl relative z-10" id="callout-card-0">
+          <div class="mb-1">
+            <h3 class="text-base sm:text-xl font-black text-white" id="c0-title">Ultra Brain</h3>
+          </div>
+          <p class="text-xs sm:text-sm font-bold text-cyan-300" id="c0-desc">3 Billion thoughts every single second!</p>
+        </div>
+        <!-- Pointer line leading towards center -->
+        <div class="hidden lg:block absolute top-1/2 -right-14 w-14 h-[2px] laser-line"></div>
+        <div class="hidden lg:block absolute top-1/2 -right-8 w-2.5 h-2.5 rounded-full bg-cyan-400 -translate-y-1 shadow-[0_0_8px_#38bdf8]"></div>
+      </div>
+
+      <!-- Callout #2 (Bottom-Left) -->
+      <div class="relative group cursor-pointer" onclick="highlightFeature(1)">
+        <div class="callout-card p-4 border-l-4 border-amber-400 shadow-xl relative z-10" id="callout-card-1">
+          <div class="mb-1">
+            <h3 class="text-base sm:text-xl font-black text-white" id="c1-title">Game Master</h3>
+          </div>
+          <p class="text-xs sm:text-sm font-bold text-amber-300" id="c1-desc">Runs Roblox, Minecraft & All Code!</p>
+        </div>
+        <!-- Pointer line leading towards center -->
+        <div class="hidden lg:block absolute top-1/2 -right-14 w-14 h-[2px] laser-line"></div>
+        <div class="hidden lg:block absolute top-1/2 -right-8 w-2.5 h-2.5 rounded-full bg-amber-400 -translate-y-1 shadow-[0_0_8px_#fbbf24]"></div>
+      </div>
+
+    </div>
+
+    <!-- ── CENTER COLUMN: GIANT SUPERHERO (TAKES ENTIRE SCREEN HEIGHT) ── -->
+    <div class="col-span-12 lg:col-span-6 flex flex-col items-center justify-center text-center relative z-20 py-2">
+      
+      <!-- GIANT HERO CHARACTER DISPLAY (Scales nicely from phone 220px to smartboard 380px) -->
+      <div class="h-56 sm:h-72 lg:h-96 w-full flex items-center justify-center relative cursor-pointer group" id="hero-svg-container" onclick="playHeroVoice()" title="Touch Hero to Speak!">
+        <!-- Dynamically injected SVG / 3D Image -->
+      </div>
+
+      <!-- Voice Indicator / Touch to Speak Button -->
+      <div id="voice-indicator" onclick="playHeroVoice()" class="cursor-pointer mb-2 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-cyan-500/20 border border-white/20 hover:border-cyan-400 text-slate-200 hover:text-cyan-300 text-xs sm:text-sm font-bold flex items-center gap-2 shadow-lg backdrop-blur-md transition-all hover:scale-105 active:scale-95" title="Tap to listen">
+        <i class="fa-solid fa-volume-high text-cyan-400" id="voice-icon"></i>
+        <span id="voice-hint-text">Touch Hero to Speak!</span>
+      </div>
+
+      <!-- Character Role Badge Tag -->
+      <div class="flex items-center gap-2 mb-1 px-3.5 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+        <span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full animate-ping" id="hero-dot" style="background-color: #00f2fe;"></span>
+        <span class="text-[11px] sm:text-sm font-black uppercase tracking-widest text-cyan-300" id="hero-tag">The Supreme Mind</span>
+      </div>
+
+      <!-- Hero Identity & Role Title -->
+      <h2 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-wide mt-1 mb-1 drop-shadow-md leading-tight" id="hero-title">
+        Brainy: The CPU
+      </h2>
+
+      <!-- Mobile/Tablet Responsive Callouts (2-column neat grid for phones & tablets) -->
+      <div class="grid grid-cols-2 gap-2 w-full max-w-lg mt-3 px-1 lg:hidden" id="mobile-callouts">
+        <!-- Injected dynamically for smaller screens -->
+      </div>
+
+    </div>
+
+    <!-- ── RIGHT COLUMN: 2 PUNCHY CALLOUT BADGES (WITH POINTER LINES) ── -->
+    <div class="hidden lg:flex lg:col-span-3 flex-col justify-center gap-6 pr-12 z-30" id="right-callouts">
+      
+      <!-- Callout #3 (Top-Right) -->
+      <div class="relative group cursor-pointer" onclick="highlightFeature(2)">
+        <!-- Pointer line leading from center -->
+        <div class="hidden lg:block absolute top-1/2 -left-14 w-14 h-[2px] laser-line"></div>
+        <div class="hidden lg:block absolute top-1/2 -left-8 w-2.5 h-2.5 rounded-full bg-cyan-400 -translate-y-1 shadow-[0_0_8px_#38bdf8]"></div>
+        <div class="callout-card p-4 border-r-4 border-cyan-400 shadow-xl relative z-10 text-right" id="callout-card-2">
+          <div class="mb-1">
+            <h3 class="text-base sm:text-xl font-black text-white" id="c2-title">Boss Orders</h3>
+          </div>
+          <p class="text-xs sm:text-sm font-bold text-cyan-300" id="c2-desc">Sends fast orders to all other heroes!</p>
+        </div>
+      </div>
+
+      <!-- Callout #4 (Bottom-Right) -->
+      <div class="relative group cursor-pointer" onclick="highlightFeature(3)">
+        <!-- Pointer line leading from center -->
+        <div class="hidden lg:block absolute top-1/2 -left-14 w-14 h-[2px] laser-line"></div>
+        <div class="hidden lg:block absolute top-1/2 -left-8 w-2.5 h-2.5 rounded-full bg-emerald-400 -translate-y-1 shadow-[0_0_8px_#10b981]"></div>
+        <div class="callout-card p-4 border-r-4 border-emerald-400 shadow-xl relative z-10 text-right" id="callout-card-3">
+          <div class="mb-1">
+            <h3 class="text-base sm:text-xl font-black text-white" id="c3-title">Never Sleeps</h3>
+          </div>
+          <p class="text-xs sm:text-sm font-bold text-emerald-300" id="c3-desc">Works 24/7 inside the computer!</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Next Arrow (Touch Target) -->
+    <button onclick="nextHero()" class="absolute right-0.5 sm:right-2 z-40 w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl bg-slate-950/70 sm:bg-slate-900/90 hover:bg-cyan-600 border border-slate-700 hover:border-cyan-400 text-white flex items-center justify-center text-sm sm:text-2xl shadow-xl backdrop-blur-sm transition-all transform hover:scale-110 active:scale-95 group" title="Next Hero">
+      <i class="fa-solid fa-chevron-right group-hover:translate-x-1 transition-transform"></i>
+    </button>
+
+  </main>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       BOTTOM HERO DOCK: HORIZONTALLY SCROLLABLE ON MOBILE, CENTERED ON LARGE SCREENS
+       ══════════════════════════════════════════════════════════════════ -->
+  <footer class="w-full max-w-3xl mx-auto z-30 pb-2 px-1 sticky bottom-0 lg:relative">
+    <div class="p-1.5 sm:p-2.5 rounded-2xl bg-slate-950/90 backdrop-blur-md border border-white/10 flex items-center justify-start sm:justify-center gap-1.5 sm:gap-3 shadow-2xl overflow-x-auto no-scrollbar">
+      
+      <button onclick="selectHero(0)" id="dock-0" class="dock-pill whitespace-nowrap flex-shrink-0 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-cyan-600 text-white text-xs sm:text-sm font-black border border-cyan-400 shadow-lg shadow-cyan-500/30 transition-all">
+        1. Brainy
+      </button>
+      <button onclick="selectHero(1)" id="dock-1" class="dock-pill whitespace-nowrap flex-shrink-0 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-slate-900/80 text-slate-400 hover:text-white text-xs sm:text-sm font-bold border border-slate-800 transition-all">
+        2. Flashy
+      </button>
+      <button onclick="selectHero(2)" id="dock-2" class="dock-pill whitespace-nowrap flex-shrink-0 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-slate-900/80 text-slate-400 hover:text-white text-xs sm:text-sm font-bold border border-slate-800 transition-all">
+        3. Tank
+      </button>
+      <button onclick="selectHero(3)" id="dock-3" class="dock-pill whitespace-nowrap flex-shrink-0 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-slate-900/80 text-slate-400 hover:text-white text-xs sm:text-sm font-bold border border-slate-800 transition-all">
+        4. Magic
+      </button>
+      <button onclick="selectHero(4)" id="dock-4" class="dock-pill whitespace-nowrap flex-shrink-0 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-slate-900/80 text-slate-400 hover:text-white text-xs sm:text-sm font-bold border border-slate-800 transition-all">
+        5. Volt
+      </button>
+      <button onclick="selectHero(5)" id="dock-5" class="dock-pill whitespace-nowrap flex-shrink-0 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-slate-900/80 text-slate-400 hover:text-white text-xs sm:text-sm font-bold border border-slate-800 transition-all">
+        6. Metro
+      </button>
+
+    </div>
+  </footer>
+
+  <!-- ── SCRIPTS & LOGIC ── -->
+  <script>
+    let currentLang = 'en'; // 'en' or 'ar'
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playTone(freq, type = 'sine', duration = 0.15) {
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    // Toggle Fullscreen on Smartboard
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.log(`Error entering fullscreen: ${err.message}`);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    // ── BILINGUAL HEROES WITH PUNCHY INFOGRAPHIC CALLOUTS FOR KIDS ──
+    const heroesData = {
+      en: [
+        {
+          name: '1. Brainy',
+          tag: 'The Supreme Mind',
+          color: '#00f2fe',
+          gradient: 'from-cyan-500 to-blue-600',
+          title: 'Brainy: The CPU',
+          audio: 'assets/voice_en_brainy.wav',
+          role: 'Central Processing Unit • The Supreme Intellect',
+          btnText: 'Touch to Overclock Brain Speed!',
+          btnIcon: '⚡',
+          callouts: [
+            { icon: '🧠', title: 'Ultra Brain', desc: '3 Billion calculations every second!', color: 'cyan' },
+            { icon: '⚡', title: 'Game Engine', desc: 'Runs Roblox, Minecraft & every click!', color: 'amber' },
+            { icon: '🔌', title: 'Commander Pins', desc: 'Sends quick orders to all other heroes!', color: 'cyan' },
+            { icon: '💡', title: 'Never Forgets Logic', desc: 'Follows your code instructions 24/7!', color: 'emerald' }
+          ]
+        },
+        {
+          name: '2. Flashy',
+          tag: 'The Speedster Titan',
+          color: '#10b981',
+          gradient: 'from-emerald-500 to-teal-600',
+          title: 'Flashy: The RAM',
+          audio: 'assets/voice_en_flashy.wav',
+          role: 'Random Access Memory • The Ultra-Fast Runner',
+          btnText: 'Touch to Unleash Sonic Dash!',
+          btnIcon: '🚀',
+          callouts: [
+            { icon: '⚡', title: 'Sonic Speed', desc: 'Fastest runner in the whole computer!', color: 'emerald' },
+            { icon: '🏃‍♂️', title: 'Open Games Desk', desc: 'Keeps active games ready in an instant!', color: 'cyan' },
+            { icon: '💨', title: 'Forgets at Sleep', desc: 'Desk clears when power is turned off!', color: 'amber' },
+            { icon: '🛼', title: 'Turbo Boosters', desc: 'Sprints data directly to the CPU brain!', color: 'teal' }
+          ]
+        },
+        {
+          name: '3. Tank',
+          tag: 'The Armored Titan',
+          color: '#c084fc',
+          gradient: 'from-purple-500 to-pink-600',
+          title: 'Tank: The Storage Titan (SSD)',
+          audio: 'assets/voice_en_tank.wav',
+          role: 'Solid State Drive • The Indestructible Vault',
+          btnText: "Touch to Deploy Tank's Shield!",
+          btnIcon: '🛡️',
+          callouts: [
+            { icon: '🛡️', title: 'Titanium Armor', desc: 'Indestructible steel fortress vault!', color: 'purple' },
+            { icon: '💾', title: 'Saves Everything', desc: 'All games, videos & files stay safe!', color: 'pink' },
+            { icon: '🔒', title: 'Never Forgets', desc: 'Keeps files safe even without power!', color: 'purple' },
+            { icon: '⚡', title: 'Solid State Chips', desc: 'Zero moving parts, super fast loading!', color: 'cyan' }
+          ]
+        },
+        {
+          name: '4. Magic',
+          tag: 'The Visual Sorcerer',
+          color: '#fbbf24',
+          gradient: 'from-amber-500 to-orange-600',
+          title: 'Magic: The GPU',
+          audio: 'assets/voice_en_magic.wav',
+          role: 'Graphics Processing Unit • The 3D World Creator',
+          btnText: 'Touch to Cast 3D Magic Hologram!',
+          btnIcon: '✨',
+          callouts: [
+            { icon: '🎨', title: '3D World Artist', desc: 'Builds vibrant 3D worlds and characters!', color: 'amber' },
+            { icon: '✨', title: '120 Frames/Sec', desc: 'Ultra-smooth motion for gaming eyes!', color: 'orange' },
+            { icon: '🔮', title: 'Magic Shaders', desc: 'Calculates realistic light, shadows & water!', color: 'yellow' },
+            { icon: '🎮', title: 'Color Sorcery', desc: 'Millions of glowing pixels rendered live!', color: 'pink' }
+          ]
+        },
+        {
+          name: '5. Volt',
+          tag: 'The Energy Titan',
+          color: '#f87171',
+          gradient: 'from-rose-500 to-red-600',
+          title: 'Volt: The Power Supply (PSU)',
+          audio: 'assets/voice_en_volt.wav',
+          role: 'Power Supply Unit • The Beating Electric Heart',
+          btnText: 'Touch to Fire Pure Energy Surge!',
+          btnIcon: '⚡',
+          callouts: [
+            { icon: '⚡', title: 'Tames Wall Power', desc: 'Converts dangerous wall power to clean volts!', color: 'rose' },
+            { icon: '❤️', title: 'Electric Heart', desc: 'Pumps steady electricity to keep all alive!', color: 'red' },
+            { icon: '🛡️', title: 'Surge Shield', desc: 'Blocks lightning spikes from harming PC!', color: 'amber' },
+            { icon: '🔌', title: 'Energy Conduits', desc: 'Feeds clean power cables to every hero!', color: 'cyan' }
+          ]
+        },
+        {
+          name: '6. Metro',
+          tag: 'The Cyber Commander',
+          color: '#60a5fa',
+          gradient: 'from-blue-500 to-indigo-600',
+          title: 'Metro: The Motherboard',
+          audio: 'assets/voice_en_metro.wav',
+          role: 'Main Circuit Board • Army Commander of Highways',
+          btnText: 'Touch to Sound Tactical Battle Order!',
+          btnIcon: '🎖️',
+          callouts: [
+            { icon: '🎖️', title: 'Army Commander', desc: 'Unites all heroes into one winning army!', color: 'blue' },
+            { icon: '🛣️', title: 'Data Highways', desc: 'Copper tracks carrying data at light speed!', color: 'cyan' },
+            { icon: '📡', title: 'Tactical Radar', desc: 'Directs data packets so none get lost!', color: 'indigo' },
+            { icon: '🔗', title: 'The Mother Ship', desc: 'Holds every hardware hero in its place!', color: 'blue' }
+          ]
+        }
+      ],
+      ar: [
+        {
+          name: '1. بريني',
+          tag: 'العقل المدبر الخارق',
+          color: '#00f2fe',
+          gradient: 'from-cyan-500 to-blue-600',
+          title: 'بريني: المعالج (CPU)',
+          audio: 'assets/voice_ar_brainy.wav',
+          role: 'المعالج المركزي الخارق • العقل المفكر',
+          btnText: 'المس لتفجير سرعة تفكير بريني!',
+          btnIcon: '⚡',
+          callouts: [
+            { icon: '🧠', title: 'العقل الخارق', desc: 'يفكر بـ 3 مليارات عملية في الثانية!', color: 'cyan' },
+            { icon: '⚡', title: 'محرك الألعاب', desc: 'يشغل روبلوكس وماينكرافت وكل نقرة ماوس!', color: 'amber' },
+            { icon: '🔌', title: 'قائد الأوامر', desc: 'يرسل أوامر سريعة لجميع الأبطال فوراً!', color: 'cyan' },
+            { icon: '💡', title: 'لا يتوقف أبداً', desc: 'ينفذ أكوادك وتعليماتك ليل نهار بدقة!', color: 'emerald' }
+          ]
+        },
+        {
+          name: '2. فلاشي',
+          tag: 'البطل فائق السرعة',
+          color: '#10b981',
+          gradient: 'from-emerald-500 to-teal-600',
+          title: 'فلاشي: الذاكرة المؤقتة (RAM)',
+          audio: 'assets/voice_ar_flashy.wav',
+          role: 'الذاكرة العشوائية السريعة • العداء الصاروخي',
+          btnText: 'المس لإطلاق سرعة فلاشي الصاروخية!',
+          btnIcon: '🚀',
+          callouts: [
+            { icon: '⚡', title: 'سرعة الصاروخ', desc: 'أسرع عداء في الحاسب الآلي بلا منازع!', color: 'emerald' },
+            { icon: '🏃‍♂️', title: 'مكتب الألعاب', desc: 'يجهز لك ألعابك المفتوحة بلمح البصر!', color: 'cyan' },
+            { icon: '💨', title: 'ينسى عند النوم', desc: 'يمسح مكتبه بالكامل عند إطفاء الكهرباء!', color: 'amber' },
+            { icon: '🛼', title: 'عجلات نفاثة', desc: 'تنقل البيانات فوراً إلى عقل المعالج!', color: 'teal' }
+          ]
+        },
+        {
+          name: '3. تانك',
+          tag: 'العملاق المدرع الحارس',
+          color: '#c084fc',
+          gradient: 'from-purple-500 to-pink-600',
+          title: 'تانك: عملاق التخزين (SSD)',
+          audio: 'assets/voice_ar_tank.wav',
+          role: 'وحدة التخزين الصلبة • الحصن الفولاذي الضخم',
+          btnText: 'المس لتفعيل درع تانك الفولاذي!',
+          btnIcon: '🛡️',
+          callouts: [
+            { icon: '🛡️', title: 'درع التيتانيوم', desc: 'حصن فولاذي عملاق لا يُكسر أبداً!', color: 'purple' },
+            { icon: '💾', title: 'يحفظ كل شيء', desc: 'ألعابك وصورك وفيديوهاتك بأمان تام!', color: 'pink' },
+            { icon: '🔒', title: 'لا ينسى أبداً', desc: 'يحفظ ملفاتك حتى لو أطفأت الجهاز سنين!', color: 'purple' },
+            { icon: '⚡', title: 'رقائق إلكترونية', desc: 'سرعة خارقة وبدون أي أجزاء متحركة!', color: 'cyan' }
+          ]
+        },
+        {
+          name: '4. ماجيك',
+          tag: 'ساحر العوالم ثلاثية الأبعاد',
+          color: '#fbbf24',
+          gradient: 'from-amber-500 to-orange-600',
+          title: 'ماجيك: كارت الشاشة (GPU)',
+          audio: 'assets/voice_ar_magic.wav',
+          role: 'معالج الرسوميات • ساحر الألوان والمجسمات',
+          btnText: 'المس لإطلاق سحر الأبعاد ثلاثية الأبعاد!',
+          btnIcon: '✨',
+          callouts: [
+            { icon: '🎨', title: 'رسام العوالم 3D', desc: 'يبني الشخصيات والمناظر المجسمة بألوانها!', color: 'amber' },
+            { icon: '✨', title: '120 صورة/ثانية', desc: 'نعومة فائقة في حركة ألعابك دون تقطيع!', color: 'orange' },
+            { icon: '🔮', title: 'سحر الإضاءة', desc: 'يحسب الظلال وانعكاسات الضوء والماء بدقة!', color: 'yellow' },
+            { icon: '🎮', title: 'ملايين البكسلات', desc: 'يرسم لوحة اللعبة بمليارات النقاط المضيئة!', color: 'pink' }
+          ]
+        },
+        {
+          name: '5. فولت',
+          tag: 'عملاق الطاقة المحاط بالكهرباء',
+          color: '#f87171',
+          gradient: 'from-rose-500 to-red-600',
+          title: 'فولت: مزود الطاقة (PSU)',
+          audio: 'assets/voice_ar_volt.wav',
+          role: 'مزود الطاقة • قلب الصواعق الكهربائية الحامي',
+          btnText: 'المس لضخ صاعقة طاقة قلبية!',
+          btnIcon: '⚡',
+          callouts: [
+            { icon: '⚡', title: 'مروض الكهرباء', desc: 'يحول تيار الجدار الخطر لطاقة هادئة وآمنة!', color: 'rose' },
+            { icon: '❤️', title: 'القلب النابض', desc: 'يضخ شريان الطاقة لكل الأبطال ليعيشوا!', color: 'red' },
+            { icon: '🛡️', title: 'حامي الصدمات', desc: 'يمنع الصواعق والقفزات الكهربائية من إيذاء جهازك!', color: 'amber' },
+            { icon: '🔌', title: 'شرايين الكهرباء', desc: 'كابلات كهربائية تغذي كل قطعة بدقة!', color: 'cyan' }
+          ]
+        },
+        {
+          name: '6. ميترو',
+          tag: 'قائد جيش المسارات والبيانات',
+          color: '#60a5fa',
+          gradient: 'from-blue-500 to-indigo-600',
+          title: 'ميترو: اللوحة الأم (Motherboard)',
+          audio: 'assets/voice_ar_metro.wav',
+          role: 'اللوحة الرئيسية • قائد جيش المسارات الرقمية',
+          btnText: 'المس لإصدار أمر الجيش التكتيكي!',
+          btnIcon: '🎖️',
+          callouts: [
+            { icon: '🎖️', title: 'قائد الجيش', desc: 'يوحد جميع الأبطال في معركة واحدة لا تُهزم!', color: 'blue' },
+            { icon: '🛣️', title: 'طرق البيانات', desc: 'مسارات نحاسية تسري فيها الأوامر بسرعة الضوء!', color: 'cyan' },
+            { icon: '📡', title: 'رادار المسح', desc: 'يوجه رسائل البيانات بدقة دون أي ضياع!', color: 'indigo' },
+            { icon: '🔗', title: 'الأرض والمدينة', desc: 'الحضن الكبير الذي تثبت عليه جميع المكونات!', color: 'blue' }
+          ]
+        }
+      ]
+    };
+
+    // ── GIANT SUPERHERO SVGS (SCALED UP FOR SMARTBOARD) ──
+    // ── 3D HERO IMAGES (USER'S REAL SUPERHERO CHARACTERS) ──
+    const heroImages = [
+      {
+        src: 'assets/hero_cpu.png',
+        alt: 'Brainy CPU',
+        glow: 'rgba(0, 242, 254, 0.5)',
+        class: 'hero-hover drop-shadow-[0_0_40px_rgba(0,242,254,0.5)]',
+        audio: 'assets/voice_brainy.wav'
+      },
+      {
+        src: 'assets/hero_ram.png',
+        alt: 'Flashy RAM',
+        glow: 'rgba(16, 185, 129, 0.5)',
+        class: 'hero-hover drop-shadow-[0_0_40px_rgba(16,185,129,0.5)]',
+        audio: 'assets/voice_flashy.wav'
+      },
+      {
+        src: 'assets/hero_ssd.png',
+        alt: 'Tank SSD',
+        glow: 'rgba(249, 115, 22, 0.5)',
+        class: 'hero-hover drop-shadow-[0_0_40px_rgba(249,115,22,0.5)]',
+        audio: 'assets/voice_tank.wav'
+      },
+      {
+        src: 'assets/hero_gpu.png',
+        alt: 'Magic GPU',
+        glow: 'rgba(59, 130, 246, 0.5)',
+        class: 'hero-hover drop-shadow-[0_0_40px_rgba(59,130,246,0.5)]',
+        audio: 'assets/voice_magic.wav'
+      },
+      {
+        src: 'assets/hero_psu.png',
+        alt: 'Volt PSU',
+        glow: 'rgba(234, 179, 8, 0.5)',
+        class: 'hero-hover drop-shadow-[0_0_40px_rgba(234,179,8,0.5)]',
+        audio: 'assets/voice_volt.wav'
+      },
+      {
+        src: 'assets/hero_metro.png',
+        alt: 'Commander Metro Motherboard',
+        glow: 'rgba(239, 68, 68, 0.5)',
+        class: 'hero-hover drop-shadow-[0_0_40px_rgba(239,68,68,0.5)]',
+        audio: 'assets/voice_metro.wav'
+      }
+    ];
+
+    let currentHeroIdx = 0;
+
+    function renderCurrentHero() {
+      stopCurrentVoice();
+      const hero = heroesData[currentLang][currentHeroIdx];
+
+      // Update counters & tags
+      const total = heroesData[currentLang].length;
+      document.getElementById('hero-badge-counter').innerText = 
+        currentLang === 'en' ? `Hero ${currentHeroIdx + 1} of ${total}` : `بطل ${currentHeroIdx + 1} من ${total}`;
+      
+      document.getElementById('hero-tag').innerText = hero.tag;
+      document.getElementById('hero-tag').style.color = hero.color;
+      document.getElementById('hero-dot').style.backgroundColor = hero.color;
+
+      // Inject Giant Animated SVG (Responsive sizing)
+      const heroImg = heroImages[currentHeroIdx];
+      document.getElementById('hero-svg-container').innerHTML = `
+        <div class="relative flex items-center justify-center h-full w-full group">
+          <div class="absolute inset-0 rounded-full blur-3xl opacity-30 transition-all" style="background: ${hero.color};"></div>
+          <img src="${heroImg.src}" alt="${heroImg.alt}" 
+               class="max-h-48 sm:max-h-64 lg:max-h-[380px] w-auto object-contain rounded-2xl ${heroImg.class} transition-all transform group-hover:scale-105 duration-300 pointer-events-auto cursor-pointer"
+               style="filter: drop-shadow(0 0 35px ${hero.color});" />
+        </div>
+      `;
+      document.getElementById('hero-title').innerText = hero.title;
+
+      // Update 4 Infographic Callouts (Desktop left 2, right 2)
+      for (let i = 0; i < 4; i++) {
+        const c = hero.callouts[i];
+        document.getElementById(`c${i}-title`).innerText = c.title;
+        document.getElementById(`c${i}-desc`).innerText = c.desc;
+      }
+
+      // Update Mobile Callouts (Neat 2-column grid cards for phones & tablets)
+      const mobileCalloutsEl = document.getElementById('mobile-callouts');
+      if (mobileCalloutsEl) {
+        mobileCalloutsEl.innerHTML = hero.callouts.map((c, i) => `
+          <div class="callout-card p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-left cursor-pointer transition-all active:scale-95 shadow-md" 
+               style="border-inline-start: 4px solid ${hero.color};"
+               onclick="highlightMobileFeature(this, ${i})">
+            <h4 class="text-xs font-black text-white leading-tight">${c.title}</h4>
+            <p class="text-[11px] font-semibold text-slate-300 mt-1 leading-snug">${c.desc}</p>
+          </div>
+        `).join('');
+      }
+
+      // Update Minimalist Touch Dock Pills (with mobile horizontal scroll)
+      for (let i = 0; i < total; i++) {
+        const dockBtn = document.getElementById(`dock-${i}`);
+        dockBtn.innerText = heroesData[currentLang][i].name;
+        if (i === currentHeroIdx) {
+          dockBtn.className = `dock-pill whitespace-nowrap flex-shrink-0 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-gradient-to-r ${hero.gradient} text-slate-950 text-xs sm:text-sm font-black shadow-lg scale-105 transition-all`;
+          try {
+            dockBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          } catch(e) {}
+        } else {
+          dockBtn.className = `dock-pill whitespace-nowrap flex-shrink-0 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-slate-900/80 text-slate-400 hover:text-white text-xs sm:text-sm font-bold border border-slate-800 transition-all`;
+        }
+      }
+
+      playTone(520 + currentHeroIdx * 65, 'sine', 0.12);
+    }
+
+    function highlightMobileFeature(card, idx) {
+      playTone(700 + idx * 80, 'sine', 0.15);
+      card.style.transform = 'scale(1.05)';
+      card.style.borderColor = '#00f2fe';
+      setTimeout(() => {
+        card.style.transform = '';
+        card.style.borderColor = '';
+      }, 300);
+    }
+
+    function nextHero() {
+      const total = heroesData[currentLang].length;
+      currentHeroIdx = (currentHeroIdx + 1) % total;
+      renderCurrentHero();
+    }
+
+    function prevHero() {
+      const total = heroesData[currentLang].length;
+      currentHeroIdx = (currentHeroIdx - 1 + total) % total;
+      renderCurrentHero();
+    }
+
+    function selectHero(idx) {
+      currentHeroIdx = idx;
+      renderCurrentHero();
+    }
+
+    function highlightFeature(idx) {
+      playTone(700 + idx * 80, 'sine', 0.15);
+      const card = document.getElementById(`callout-card-${idx}`);
+      card.style.transform = 'scale(1.12)';
+      card.style.borderColor = '#00f2fe';
+      setTimeout(() => {
+        card.style.transform = '';
+        card.style.borderColor = '';
+      }, 400);
+    }
+
+    let currentVoiceAudio = null;
+
+    function stopCurrentVoice() {
+      if (currentVoiceAudio) {
+        currentVoiceAudio.pause();
+        currentVoiceAudio.currentTime = 0;
+        currentVoiceAudio = null;
+      }
+      const heroEl = document.querySelector('#hero-svg-container img');
+      if (heroEl) {
+        heroEl.classList.remove('hero-speaking');
+      }
+      updateVoiceIndicator(false);
+    }
+
+    function updateVoiceIndicator(isPlaying) {
+      const badge = document.getElementById('voice-indicator');
+      const hint = document.getElementById('voice-hint-text');
+      const icon = document.getElementById('voice-icon');
+      if (!badge || !hint || !icon) return;
+
+      if (isPlaying) {
+        badge.className = "cursor-pointer mb-2 px-4 py-1.5 rounded-full bg-emerald-500/25 border border-emerald-400 text-emerald-300 text-xs sm:text-sm font-black flex items-center gap-2 shadow-lg shadow-emerald-500/20 backdrop-blur-md transition-all scale-105";
+        icon.className = "fa-solid fa-volume-high text-emerald-400 animate-bounce";
+        hint.innerText = currentLang === 'ar' ? 'البطل يتكلم الآن... (المس للإيقاف)' : 'Speaking now... (Touch to Pause)';
+      } else {
+        badge.className = "cursor-pointer mb-2 px-4 py-1.5 rounded-full bg-white/10 hover:bg-cyan-500/20 border border-white/20 hover:border-cyan-400 text-slate-200 hover:text-cyan-300 text-xs sm:text-sm font-bold flex items-center gap-2 shadow-lg backdrop-blur-md transition-all hover:scale-105 active:scale-95";
+        icon.className = "fa-solid fa-volume-high text-cyan-400";
+        hint.innerText = currentLang === 'ar' ? 'المس البطل ليتكلم!' : 'Touch Hero to Speak!';
+      }
+    }
+
+    function playHeroVoice() {
+      const heroData = heroesData[currentLang][currentHeroIdx];
+      if (!heroData || !heroData.audio) return;
+
+      // If already playing, toggle pause/stop
+      if (currentVoiceAudio && !currentVoiceAudio.paused) {
+        stopCurrentVoice();
+        return;
+      }
+
+      stopCurrentVoice();
+
+      const audio = new Audio(heroImgData.audio);
+      currentVoiceAudio = audio;
+
+      const heroEl = document.querySelector('#hero-svg-container img');
+      if (heroEl) {
+        heroEl.classList.add('hero-speaking');
+      }
+
+      updateVoiceIndicator(true);
+
+      audio.play().catch(err => console.log('Audio playback:', err));
+
+      audio.onended = () => {
+        if (heroEl) heroEl.classList.remove('hero-speaking');
+        updateVoiceIndicator(false);
+        currentVoiceAudio = null;
+      };
+    }
+
+    // Toggle Language (EN <-> AR)
+    function toggleLang() {
+      currentLang = currentLang === 'en' ? 'ar' : 'en';
+      const htmlTag = document.documentElement;
+      const body = document.getElementById('app-body');
+      
+      if (currentLang === 'ar') {
+        htmlTag.setAttribute('dir', 'rtl');
+        htmlTag.setAttribute('lang', 'ar');
+        body.style.fontFamily = "'Cairo', sans-serif";
+        document.getElementById('lang-btn-text').innerText = 'English';
+        document.getElementById('app-title').innerText = 'أبطال الحاسب الآلي';
+        document.getElementById('app-subtitle').innerText = 'مختبر الحاسب التفاعلي للصبورة الذكية';
+        document.getElementById('fs-btn-text').innerText = 'شاشة كاملة';
+      } else {
+        htmlTag.setAttribute('dir', 'ltr');
+        htmlTag.setAttribute('lang', 'en');
+        body.style.fontFamily = "'Fredoka', 'Inter', sans-serif";
+        document.getElementById('lang-btn-text').innerText = 'عربي';
+        document.getElementById('app-title').innerText = 'Hardware Heroes';
+        document.getElementById('app-subtitle').innerText = 'Smartboard Interactive PC Lab';
+        document.getElementById('fs-btn-text').innerText = 'Full Screen';
+      }
+
+      renderCurrentHero();
+    }
+
+    // Arrow keys & spacebar navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') {
+        if (currentLang === 'en') nextHero(); else prevHero();
+      } else if (e.key === 'ArrowLeft') {
+        if (currentLang === 'en') prevHero(); else nextHero();
+      } else if (e.key === ' ') {
+        playHeroVoice();
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullScreen();
+      }
+    });
+
+    // Mobile Touch Swipe Gesture Support
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    window.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].clientX;
+      touchStartY = e.changedTouches[0].clientY;
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      const diffX = touchEndX - touchStartX;
+      const diffY = touchEndY - touchStartY;
+
+      // Only trigger if horizontal swipe is significant and larger than vertical scroll
+      if (Math.abs(diffX) > 45 && Math.abs(diffX) > Math.abs(diffY) * 1.4) {
+        if (diffX < 0) {
+          // Swipe Left -> Next Hero (LTR) or Prev Hero (RTL)
+          if (currentLang === 'en') nextHero(); else prevHero();
+        } else {
+          // Swipe Right -> Prev Hero (LTR) or Next Hero (RTL)
+          if (currentLang === 'en') prevHero(); else nextHero();
+        }
+      }
+    }, { passive: true });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCurrentHero();
+    });
+  </script>
+</body>
+</html>
